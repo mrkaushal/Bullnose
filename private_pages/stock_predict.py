@@ -11,28 +11,19 @@ def stock_predict():
   ('RIL', 'LICI', 'SUNPHARMA'))
 
 
-  # Simple line chart in streamlit
-  chart_data = pd.DataFrame( np.random.randn(20, 3), columns=['a', 'b', 'c'])
+  if option == 'RIL':
+    uploaded_file = st.file_uploader("Choose a file", type="csv")
+    if uploaded_file is not None:
+      csv_read = pd.read_csv(uploaded_file, parse_dates=True, index_col=0)
+      # st.dataframe(df, use_container_width=True)  # Same as st.write(df)
 
-  # Break line in streamlit
-  st.write("")
-  
-  st.line_chart(chart_data)
+      df = pd.DataFrame(
+        columns=["Date", "Open", "High", "Low", "Close", "Adj Close", "Volume"],
+        data=csv_read,
+      )
 
-  st.empty()
+      st.dataframe(df, use_container_width=True)  # Same as st.write(df)
 
-  uploaded_file = st.file_uploader("Choose a file", type="csv")
-  if uploaded_file is not None:
-    csv_read = pd.read_csv(uploaded_file, parse_dates=True, index_col=0)
-    # st.dataframe(df, use_container_width=True)  # Same as st.write(df)
+      # convert date column to text
 
-    df = pd.DataFrame(
-      columns=["Date", "Open", "High", "Low", "Close", "Adj Close", "Volume"],
-      data=csv_read,
-    )
-
-    st.dataframe(df, use_container_width=True)  # Same as st.write(df)
-
-    # convert date column to text
-
-    st.line_chart(df[['Open', 'High', 'Close']])
+      st.line_chart(df[['Open', 'High', 'Close']])
