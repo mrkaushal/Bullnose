@@ -7,6 +7,8 @@ import cv2
 # Streamlit options menu
 from streamlit_option_menu import option_menu
 
+from auth import login
+
 # Public Pages
 from public_pages.home import home
 from public_pages.contact import contact
@@ -19,17 +21,27 @@ im = Image.open("media/favicon.ico")
 st.set_page_config(
     page_title="Bullnose",
     page_icon=im,
-    layout="wide",
+    layout="wide", # centered
     initial_sidebar_state="expanded", # collapsed
+    menu_items={
+        'Get Help': 'https://kaushalpatel.info',
+        'Report a bug': "https://kaushalpatel.info",
+        'About': "# This is a header. This is an *extremely* cool app!"
+    }
 )
 
 def main():
     # Sidebar menu
+    # if user is logged in, show logout button
+    if st.session_state.get("logged_in", True):
+        login_menu = "Logout"
+    else:
+        login_menu = "Login"
     with st.sidebar:
         selected = option_menu(
             menu_title="Menu",
-            options=["Home", "Stock Prediction", "Other", "Settings","Contact"],
-            icons=["house", "book", "back", "wrench","envelope"],
+            options=["Home", "Stock Prediction", "Other", "Settings","Contact", login_menu],
+            icons=["house", "book", "back", "wrench","envelope", "shield-lock"],
             menu_icon="cast",
             default_index=0,
             orientation="vertical", # horizontal
@@ -70,6 +82,8 @@ def main():
     elif selected == "Contact":
         contact()
 
+    elif selected == "Login":
+        login()
 # Run the main function
 if __name__ == "__main__":
     main()

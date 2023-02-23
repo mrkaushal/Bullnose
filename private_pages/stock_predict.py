@@ -10,23 +10,6 @@ def stock_predict():
   'How would you like to be contacted?',
   ('RIL', 'LICI', 'SUNPHARMA'))
 
-  uploaded_file = st.file_uploader("Choose a file")
-  if uploaded_file is not None:
-      # To read file as bytes:
-      bytes_data = uploaded_file.getvalue()
-      st.write(bytes_data)
-
-      # To convert to a string based IO:
-      stringio = StringIO(uploaded_file.getvalue().decode("utf-8"))
-      st.write(stringio)
-
-      # To read file as string:
-      string_data = stringio.read()
-      st.write(string_data)
-
-      # Can be used wherever a "file-like" object is accepted:
-      dataframe = pd.read_csv(uploaded_file)
-      st.write(dataframe)
 
   # Simple line chart in streamlit
   chart_data = pd.DataFrame( np.random.randn(20, 3), columns=['a', 'b', 'c'])
@@ -35,3 +18,21 @@ def stock_predict():
   st.write("")
   
   st.line_chart(chart_data)
+
+  st.empty()
+
+  uploaded_file = st.file_uploader("Choose a file", type="csv")
+  if uploaded_file is not None:
+    csv_read = pd.read_csv(uploaded_file, parse_dates=True, index_col=0)
+    # st.dataframe(df, use_container_width=True)  # Same as st.write(df)
+
+    df = pd.DataFrame(
+      columns=["Date", "Open", "High", "Low", "Close", "Adj Close", "Volume"],
+      data=csv_read,
+    )
+
+    st.dataframe(df, use_container_width=True)  # Same as st.write(df)
+
+    # convert date column to text
+
+    st.line_chart(df[['Open', 'High', 'Close']])
