@@ -8,6 +8,7 @@ import cv2
 from streamlit_option_menu import option_menu
 
 from auth import login
+from generate_session import generate_session
 
 # Public Pages
 from public_pages.home import home
@@ -33,15 +34,15 @@ st.set_page_config(
 def main():
     # Sidebar menu
     # if user is logged in, show logout button
-    if st.session_state.get("logged_in", True):
+    if st.session_state.get("logged_in", False):
         login_menu = "Logout"
     else:
         login_menu = "Login"
     with st.sidebar:
         selected = option_menu(
             menu_title="Menu",
-            options=["Home", "Stock Prediction", "Other", "Settings","Contact", login_menu],
-            icons=["house", "book", "back", "wrench","envelope", "shield-lock"],
+            options=["Home", "Stock Prediction", "Other", "Settings","Contact","TOTP", login_menu],
+            icons=["house", "book", "back", "wrench","envelope", "book","shield-lock"],
             menu_icon="cast",
             default_index=0,
             orientation="vertical", # horizontal
@@ -81,6 +82,9 @@ def main():
 
     elif selected == "Contact":
         contact()
+
+    elif selected == "TOTP":
+        generate_session()
 
     elif selected == "Login":
         login()
