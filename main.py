@@ -2,10 +2,14 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from PIL import Image
+import time
 
 import cv2
 # Streamlit options menu
 from streamlit_option_menu import option_menu
+
+# Streamlit extra 
+from streamlit_extras.metric_cards import style_metric_cards
 
 from auth import login
 from generate_session import generate_session
@@ -19,6 +23,8 @@ from private_pages.stock_predict import stock_predict
 
 # Title and icon
 im = Image.open("media/favicon.ico")
+logo = Image.open("media/logo-full.png")
+
 st.set_page_config(
     page_title="Bullnose",
     page_icon=im,
@@ -54,6 +60,8 @@ def main():
 
     # Stock Prediction page
     elif selected == "Stock Prediction":
+        with st.spinner('Wait for it...'):
+            time.sleep(1)
         stock_predict()
 
     elif selected == "Settings":
