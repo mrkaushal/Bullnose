@@ -69,7 +69,7 @@ def stock_predict():
       # st.write(his_data)
       # Generate the DataFrame from the data
       df = pd.DataFrame(his_data['data'])
-      # st.dataframe(df)
+      st.dataframe(df)
       
       # Generate the dates list
       dates = []
@@ -96,10 +96,10 @@ def stock_predict():
       })
       
       # Generate the line chart for the stock with the dates on x-axis and the price on y-axis
-      st.line_chart(data=df[['Open', 'High', 'Low', 'Close']],
-                    use_container_width=True,
-                    height=500
-                    )
+      # st.line_chart(data=df[['Open', 'High', 'Low', 'Close']],
+      #               use_container_width=True,
+      #               height=500
+      #               )
       
     except Exception as e:
-        print("Historic Api failed: {}".format(e.message))
+      print("Historic Api failed: {}".format(e.message))
