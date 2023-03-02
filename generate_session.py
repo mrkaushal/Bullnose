@@ -99,7 +99,15 @@ def generate_session():
                 historical_jwtToken = his_data['data']['jwtToken']
 
                 # session_collection.insert_one(data)
+
+                # session id counter
+                session_id = 1
+                # check if session id exists then increment it by 1
+                if session_collection.find_one({"_id": session_id}):
+                    session_id = session_id + 1
+
                 data = {
+                    "_id": session_id,
                     "reg_rt": regular_refreshToken,
                     "reg_ft": regular_feedToken,
                     "reg_jt": regular_jwtToken,

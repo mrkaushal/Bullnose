@@ -13,11 +13,15 @@ def contact():
         if st.form_submit_button("Send"):
             if name and email and message:
                 collection = mongodb("contact")
-                data = {"name":name,
-                        "email":email,
-                        "phone":phone,
-                        "message":message
-                        }
+                contact_id = collection.count_documents({}) + 1
+                data = {
+                    "_id":contact_id, # "_id" is a default key in MongoDB, so we can't use it as a key in our data. So we use "contact_id" as a key and "_id" as a value.
+                    "name":name,
+                    "email":email,
+                    "phone":phone,
+                    "message":message,
+                    "is_read":False
+                    }
                 collection.insert_one(data)
                 st.success("Message sent successfully!")
             else:

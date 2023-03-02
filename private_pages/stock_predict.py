@@ -15,8 +15,11 @@ from streamlit_extras.no_default_selectbox import selectbox
 from smartapi import SmartConnect #or from smartapi.smartConnect import SmartConnect
 #import smartapi.smartExceptions(for smartExceptions)
 api_key=mongodb("config").find_one()["api_key_historical"]
-access_token=mongodb("api_sessions").find_one()["his_jt"]
-refresh_token=mongodb("api_sessions").find_one()["his_rt"]
+# find last record from api_sessions from _id column
+last_record=mongodb("api_sessions").find().sort("_id", -1).limit(1)
+access_token=last_record[0]["his_jt"]
+refresh_token=last_record[0]["his_rt"]
+
 #create object of call
 obj=SmartConnect(api_key=api_key, access_token=access_token, refresh_token=refresh_token)
 
@@ -40,17 +43,17 @@ def stock_predict():
 
   # Convert the json data to columns and rows
   df = pd.DataFrame(data)
-
   # Selectbox to select the stock
   stock_name = st.selectbox('Select the stock', df['symbol'] + ' - ' + df['exch_seg'])
+ 
   # From date
-  from_date = st.date_input('From Date', datetime.date(2023, 2, 1))
-  # To date
-  to_date = st.date_input('To Date', datetime.date(2023, 2, 25))
+  from_date = st.date_input('From Date', datetime.datetime.now() - datetime.timedelta(days=1))
   from_date = from_date.strftime("%Y-%m-%d")+ " 09:00"
+  # To date
+  to_date = st.date_input('To Date', datetime.datetime.now())
   to_date = to_date.strftime("%Y-%m-%d")+ " 15:30"
-  # Streamlit fiwld with date and time
-  # ftdt = st.date_input('From Date', datetime.date(2023, 2, 1))
+
+  # Selectbox to select the interval
   interval = st.selectbox('Select the interval', ['ONE_MINUTE', 'FIVE_MINUTE', 'FIFTEEN_MINUTE', 'THIRTY_MINUTE', 'ONE_HOUR', 'ONE_DAY'])
   # Fetch the token from the selected stock
   token = df.loc[df['symbol'] + ' - ' + df['exch_seg'] == stock_name, 'token'].values[0]
@@ -69,7 +72,7 @@ def stock_predict():
       # st.write(his_data)
       # Generate the DataFrame from the data
       df = pd.DataFrame(his_data['data'])
-      st.dataframe(df)
+      # st.dataframe(df, use_container_width=True)
       
       # Generate the dates list
       dates = []
@@ -94,7 +97,7 @@ def stock_predict():
         'Close': close_price,
         'Volume': volume
       })
-      
+      st.dataframe(df, use_container_width=True)
       # Generate the line chart for the stock with the dates on x-axis and the price on y-axis
       # st.line_chart(data=df[['Open', 'High', 'Low', 'Close']],
       #               use_container_width=True,

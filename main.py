@@ -21,6 +21,9 @@ from public_pages.contact import contact
 from private_pages.settings import settings
 from private_pages.stock_predict import stock_predict
 
+# Admin Pages
+from pages.admin.contact_form_list import contact_form_list
+
 # Title and icon
 im = Image.open("media/favicon.ico")
 logo = Image.open("media/logo-full.png")
@@ -40,19 +43,28 @@ st.set_page_config(
 def main():
     # Sidebar menu
     # if user is logged in, show logout button
-    if st.session_state.get("logged_in", False):
+    if st.session_state.get("logged_in", True):
         login_menu = "Logout"
+        with st.sidebar:
+            selected = option_menu(
+                menu_title="Menu",
+                options=["Home", "Stock Prediction", "Settings","Contact Details","TOTP", login_menu],
+                icons=["house", "book", "wrench","envelope", "book","shield-lock"],
+                menu_icon="cast",
+                default_index=0,
+                orientation="vertical", # horizontal
+            )
     else:
         login_menu = "Login"
-    with st.sidebar:
-        selected = option_menu(
-            menu_title="Menu",
-            options=["Home", "Stock Prediction", "Other", "Settings","Contact","TOTP", login_menu],
-            icons=["house", "book", "back", "wrench","envelope", "book","shield-lock"],
-            menu_icon="cast",
-            default_index=0,
-            orientation="vertical", # horizontal
-        )
+        with st.sidebar:
+            selected = option_menu(
+                menu_title="Menu",
+                options=["Home", "Stock Prediction", "Settings","Contact","TOTP", login_menu],
+                icons=["house", "book", "wrench","envelope", "book","shield-lock"],
+                menu_icon="cast",
+                default_index=0,
+                orientation="vertical", # horizontal
+            )
 
     # Home page
     if selected == "Home":
@@ -67,29 +79,11 @@ def main():
     elif selected == "Settings":
         settings()
 
-    # Other page
-    elif selected == "Other":
-        st.title("Other")
-        st.write("Getting continous data of stock")
-
-        img_file_buffer = st.camera_input("Take a picture")
-
-        if img_file_buffer is not None:
-            # To read image file buffer with OpenCV:
-            bytes_data = img_file_buffer.getvalue()
-            cv2_img = cv2.imdecode(np.frombuffer(bytes_data, np.uint8), cv2.IMREAD_COLOR)
-
-            # Check the type of cv2_img:
-            # Should output: <class 'numpy.ndarray'>
-            st.write(type(cv2_img))
-
-            # Check the shape of cv2_img:
-            # Should output shape: (height, width, channels)
-            st.write(cv2_img.shape)
-
-
     elif selected == "Contact":
         contact()
+
+    elif selected == "Contact Details":
+        contact_form_list()
 
     elif selected == "TOTP":
         generate_session()
