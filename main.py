@@ -24,6 +24,12 @@ from private_pages.stock_predict import stock_predict
 # Admin Pages
 from pages.admin.contact_form_list import contact_form_list
 
+# Dash Pages
+from pages.admin.dashboard.dashboard import dash
+
+# User Pages
+from pages.admin.user import add_user
+
 # Title and icon
 im = Image.open("media/favicon.ico")
 logo = Image.open("media/logo-full.png")
@@ -48,8 +54,8 @@ def main():
         with st.sidebar:
             selected = option_menu(
                 menu_title="Menu",
-                options=["Home", "Stock Prediction", "Settings","Contact Details","TOTP", login_menu],
-                icons=["house", "book", "wrench","envelope", "book","shield-lock"],
+                options=["Dashboard", "Add User", "Stock Prediction", "Settings","TOTP", login_menu],
+                icons=["house", "shield-lock","book", "wrench","envelope","shield-lock"],
                 menu_icon="cast",
                 default_index=0,
                 orientation="vertical", # horizontal
@@ -70,6 +76,13 @@ def main():
     if selected == "Home":
         home()
 
+    # Dashboard page
+    elif selected == "Dashboard":
+        dash()
+
+    elif selected == "Add User":
+        add_user.Users().add_user()
+        
     # Stock Prediction page
     elif selected == "Stock Prediction":
         with st.spinner('Wait for it...'):
