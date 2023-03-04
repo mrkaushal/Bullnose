@@ -11,22 +11,24 @@ from streamlit_option_menu import option_menu
 # Streamlit extra 
 from streamlit_extras.metric_cards import style_metric_cards
 
+# Streamlit Auth
+import streamlit_authenticator as stauth
+
 from auth import login
-from generate_session import generate_session
+from pages.user.session.generate_session import generate_session
 
 # Public Pages
-from public_pages.home import home
-from public_pages.contact import contact
+from pages.public_pages.home import home
+from pages.public_pages.contact import contact
+
 # Private Pages
-from private_pages.settings import settings
-from private_pages.stock_predict import stock_predict
+from pages.user.settings import settings
+from pages.user.stock_predict import stock_predict
 
 # Admin Pages
 from pages.admin.contact_form_list import contact_form_list
-
 # Dash Pages
 from pages.admin.dashboard.dashboard import dash
-
 # User Pages
 from pages.admin.user import add_user
 
@@ -49,24 +51,36 @@ st.set_page_config(
 def main():
     # Sidebar menu
     # if user is logged in, show logout button
-    if st.session_state.get("logged_in", True):
+    if st.session_state.get("logged_in", False):
         login_menu = "Logout"
-        with st.sidebar:
-            selected = option_menu(
-                menu_title="Menu",
-                options=["Dashboard", "Add User", "Stock Prediction", "Settings","TOTP", login_menu],
-                icons=["house", "shield-lock","book", "wrench","envelope","shield-lock"],
-                menu_icon="cast",
-                default_index=0,
-                orientation="vertical", # horizontal
-            )
+        # if is_admin then show admin menu
+        if st.session_state.get("is_admin", False):
+            with st.sidebar:
+                selected = option_menu(
+                    menu_title="Menu",
+                    options=["Dashboard", "Add User", "Stock Prediction", "Settings","TOTP", login_menu],
+                    icons=["house", "shield-lock","book", "wrench","envelope","shield-lock"],
+                    menu_icon="cast",
+                    default_index=0,
+                    orientation="vertical", # horizontal
+                )
+        else:
+            with st.sidebar:
+                selected = option_menu(
+                    menu_title="Menu",
+                    options=["Home", "Stock Prediction", "Settings","Contact","TOTP", login_menu],
+                    icons=["house", "book", "wrench","envelope", "book","shield-lock"],
+                    menu_icon="cast",
+                    default_index=0,
+                    orientation="vertical", # horizontal
+                )
     else:
         login_menu = "Login"
         with st.sidebar:
             selected = option_menu(
                 menu_title="Menu",
-                options=["Home", "Stock Prediction", "Settings","Contact","TOTP", login_menu],
-                icons=["house", "book", "wrench","envelope", "book","shield-lock"],
+                options=["Home", "Contact", login_menu],
+                icons=["house", "envelope", "shield-lock"],
                 menu_icon="cast",
                 default_index=0,
                 orientation="vertical", # horizontal
@@ -87,7 +101,8 @@ def main():
     elif selected == "Stock Prediction":
         with st.spinner('Wait for it...'):
             time.sleep(1)
-        stock_predict()
+        sp = stock_predict
+        sp.stock_predict()
 
     elif selected == "Settings":
         settings()

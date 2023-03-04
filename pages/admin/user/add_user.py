@@ -1,5 +1,8 @@
 import streamlit as st
 
+# Streamlit Auth
+import streamlit_authenticator as stauth
+
 # Database connection
 from database import mongodb
 
@@ -31,6 +34,7 @@ class Users:
                         # check if username already exists if yes, show warning message
                         if collection.count_documents({"username":username}) == 0:
                           user_id = collection.count_documents({}) + 1
+                          password = stauth.Hasher(password).generate()
                           data = {
                               "_id":user_id, # "_id" is a default key in MongoDB, so we can't use it as a key in our data. So we use "user_id" as a key and "_id" as a value.
                               "first_name":first_name,
