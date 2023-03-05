@@ -14,11 +14,13 @@ from streamlit_extras.no_default_selectbox import selectbox
 # Import SmartCannect API
 from smartapi import SmartConnect #or from smartapi.smartConnect import SmartConnect
 #import smartapi.smartExceptions(for smartExceptions)
-api_key=mongodb("config").find_one()["api_key_historical"]
+
+# Fetch api_key from api_config collection where _id=2
+api_key=mongodb("api_config").find_one({"_id":2})["api_key_historical"]
 # find last record from api_sessions from _id column
-last_record=mongodb("api_sessions").find().sort("_id", -1).limit(1)
-access_token=last_record[0]["his_jt"]
-refresh_token=last_record[0]["his_rt"]
+user_record=mongodb("api_sessions").find_one({"_id":2})
+access_token=user_record["his_jt"]
+refresh_token=user_record["his_rt"]
 
 #create object of call
 obj=SmartConnect(api_key=api_key, access_token=access_token, refresh_token=refresh_token)
@@ -47,10 +49,10 @@ def stock_predict():
   stock_name = st.selectbox('Select the stock', df['symbol'] + ' - ' + df['exch_seg'])
  
   # From date
-  from_date = st.date_input('From Date', datetime.datetime.now() - datetime.timedelta(days=1))
+  from_date = st.date_input('From Date', datetime.datetime.now() - datetime.timedelta(days=1), min_value=datetime.datetime.now() - datetime.timedelta(days=30), max_value=datetime.datetime.now())
   from_date = from_date.strftime("%Y-%m-%d")+ " 09:00"
-  # To date
-  to_date = st.date_input('To Date', datetime.datetime.now())
+  # To date should be greater than from date
+  to_date = st.date_input('To Date', datetime.datetime.now(), min_value=datetime.datetime.now() - datetime.timedelta(days=30), max_value=datetime.datetime.now())
   to_date = to_date.strftime("%Y-%m-%d")+ " 15:30"
 
   # Selectbox to select the interval

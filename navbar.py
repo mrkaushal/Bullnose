@@ -37,7 +37,7 @@ class Navbar:
     def sidebar(self):
         # Sidebar menu
         # if user is logged in, show logout button
-        if st.session_state.get("logged_in", False):
+        if st.session_state.get("logged_in", True):
             login_menu = "Logout"
             # if is_admin then show admin menu
             if st.session_state.get("is_admin", False):

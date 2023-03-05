@@ -22,7 +22,9 @@ st.set_page_config(
 )
 
 def main():
-    navbar.Navbar().sidebar()
+    nb = navbar.Navbar
+    nb.sidebar(self=None)
+
 # Run the main function
 if __name__ == "__main__":
     main()

@@ -6,15 +6,17 @@ import re
 
 import streamlit as st
 
+import streamlit_authenticator as stauth
+
 # Database
 from database import mongodb
 
 # User Collection
-user_collection = mongodb("api_users")
+user_collection = mongodb("users")
 # Session Collection
 session_collection = mongodb("api_sessions")
 # config Collection
-config_collection = mongodb("config")
+config_collection = mongodb("api_config")
 
 def generate_session():
 
@@ -59,9 +61,11 @@ def generate_session():
                     clientMacAddress = "00:00:00:00:00:00"  # default value if unable to retrieve
 
                 url = "https://apiconnect.angelbroking.com/rest/auth/angelbroking/user/v1/loginByPassword"
+                # Find Client Code and Password from database where id = 2
+                user_data = user_collection.find_one({"_id":2})
                 payload = {
-                    "clientcode": user_collection.find_one()["client_code"],
-                    "password": user_collection.find_one()["password"],
+                    "clientcode": user_data["username"],
+                    "password": user_data["client_password"],
                     "totp": totp,
                 }
                 headers_regular = {
@@ -99,22 +103,24 @@ def generate_session():
                 historical_jwtToken = his_data['data']['jwtToken']
 
                 # session_collection.insert_one(data)
-
+                
                 # session id counter
-                session_id = 1
+                session_id = 2
                 # check if session id exists then increment it by 1
                 if session_collection.find_one({"_id": session_id}):
-                    session_id = session_id + 1
-
-                data = {
-                    "_id": session_id,
-                    "reg_rt": regular_refreshToken,
-                    "reg_ft": regular_feedToken,
-                    "reg_jt": regular_jwtToken,
-                    "his_rt": historical_refreshToken,
-                    "his_ft": historical_feedToken,
-                    "his_jt": historical_jwtToken,
-                }
-                session_collection.insert_one(data)
+                    # Update the data
+                    data = {
+                        "_id": session_id,
+                        "reg_rt": regular_refreshToken,
+                        "reg_ft": regular_feedToken,
+                        "reg_jt": regular_jwtToken,
+                        "his_rt": historical_refreshToken,
+                        "his_ft": historical_feedToken,
+                        "his_jt": historical_jwtToken,
+                    }
+                    session_collection.update_one({"_id": session_id}, {"$set": data})
+                else:
+                    # Insert the data
+                    print("Updating data error")
             else:
                 st.warning("Please enter valid details")
