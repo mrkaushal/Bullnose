@@ -15,16 +15,6 @@ from streamlit_extras.no_default_selectbox import selectbox
 from smartapi import SmartConnect #or from smartapi.smartConnect import SmartConnect
 #import smartapi.smartExceptions(for smartExceptions)
 
-# Fetch api_key from api_config collection where _id=2
-api_key=mongodb("api_config").find_one({"_id":2})["api_key_historical"]
-# find last record from api_sessions from _id column
-user_record=mongodb("api_sessions").find_one({"_id":2})
-access_token=user_record["his_jt"]
-refresh_token=user_record["his_rt"]
-
-#create object of call
-obj=SmartConnect(api_key=api_key, access_token=access_token, refresh_token=refresh_token)
-
 # Streamlit echarts
 from streamlit_echarts import st_echarts
 from streamlit_echarts import JsCode
@@ -35,7 +25,16 @@ current_date = datetime.datetime.now().strftime("%Y-%m-%d")
 yesterday_date = (datetime.datetime.now() - datetime.timedelta(days=1)).strftime("%Y-%m-%d")
 
 def stock_predict():
-  
+  # Fetch api_key from api_config collection where _id=2
+  api_key=mongodb("api_config").find_one({"_id":2})["api_key_historical"]
+  # find last record from api_sessions from _id column
+  user_record=mongodb("api_sessions").find_one({"_id":2})
+  access_token=user_record["his_jt"]
+  refresh_token=user_record["his_rt"]
+
+  #create object of call
+  obj=SmartConnect(api_key=api_key, access_token=access_token, refresh_token=refresh_token)
+
   st.title("Stock Prediction")
   st.write("Welcome to the stock prediction page")
 

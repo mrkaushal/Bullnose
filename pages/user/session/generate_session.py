@@ -3,10 +3,11 @@ import requests
 import socket
 import uuid
 import re
-
+import time
 import streamlit as st
 
 import streamlit_authenticator as stauth
+
 
 # Database
 from database import mongodb
@@ -121,6 +122,17 @@ def generate_session():
                     session_collection.update_one({"_id": session_id}, {"$set": data})
                 else:
                     # Insert the data
-                    print("Updating data error")
+                    data = {
+                        "_id": session_id,
+                        "reg_rt": regular_refreshToken,
+                        "reg_ft": regular_feedToken,
+                        "reg_jt": regular_jwtToken,
+                        "his_rt": historical_refreshToken,
+                        "his_ft": historical_feedToken,
+                        "his_jt": historical_jwtToken,
+                    }
+                    session_collection.insert_one(data)
+                    print("Record not found")
+                    print("Record {sid} inserted successfully".format(sid=session_id))
             else:
                 st.warning("Please enter valid details")
