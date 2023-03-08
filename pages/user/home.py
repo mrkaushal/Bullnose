@@ -22,7 +22,6 @@ def home():
             <div style="background-color:#f5f5f5; padding: 10px; border-radius: 10px;">
                 <h1 style="color: #000000; text-align: center;">Welcome to the BullNose - Stock Analysis</h1>
                 <p style="color: #000000; text-align: center;">This is a sample dashboard</p>
-                <img src="https://media.giphy.com/media/3o7TKsQ8UQJhIYq6WU/giphy.gif" alt="BullNose" style="width:100%;height:100%;">
             </div>
             """,
             unsafe_allow_html=True,

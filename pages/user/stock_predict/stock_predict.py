@@ -1,109 +1,70 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
+import plost
 import json
-import datetime
-import time
-import os
-# Database
-from database import mongodb
 
 # Streamlit extras
 from streamlit_extras.no_default_selectbox import selectbox
 
-# Import SmartCannect API
-from smartapi import SmartConnect #or from smartapi.smartConnect import SmartConnect
-#import smartapi.smartExceptions(for smartExceptions)
+from pages.user.stock_predict.smartWebSocketV2 import SmartWebSocketV2
+from database import mongodb
+# Fetch api_key from api_config collection where _id=2
+client_code=mongodb("users").find_one({"_id":2})["username"]
+api_key=mongodb("api_config").find_one({"_id":2})["api_key"]
+feed_token=mongodb("api_sessions").find_one({"_id":2})["reg_ft"]
+jwt_token=mongodb("api_sessions").find_one({"_id":2})["reg_jt"]
+def real_time_predict():
+    st.title("Real Time Stock Prediction")
 
-# Streamlit echarts
-from streamlit_echarts import st_echarts
-from streamlit_echarts import JsCode
+    with open('json_files/OpenAPIScripMaster.json') as f:
+        data = json.load(f)
 
-# fetch current date
-current_date = datetime.datetime.now().strftime("%Y-%m-%d")
-# fetch yesterday date
-yesterday_date = (datetime.datetime.now() - datetime.timedelta(days=1)).strftime("%Y-%m-%d")
+    df = pd.DataFrame(data)
+    with st.form("my_form"):
+        # stock_name = st.selectbox('Select the stock', df['symbol'] + ' - ' + df['exch_seg'])
+        stock_name = selectbox('Select the stock', df['symbol'] + ' - ' + df['exch_seg'], no_selection_label="Select.....")
+        # Fetch the token from the selected stock
+        token = df.loc[df['symbol'] + ' - ' + df['exch_seg'] == stock_name, 'token'].values[0]
+        exch_seg = df.loc[df['symbol'] + ' - ' + df['exch_seg'] == stock_name, 'exch_seg'].values[0]
+        
+        AUTH_TOKEN = 'Bearer ' + jwt_token
+        API_KEY = api_key
+        CLIENT_CODE = client_code
+        FEED_TOKEN = feed_token
 
-def stock_predict():
-  # Fetch api_key from api_config collection where _id=2
-  api_key=mongodb("api_config").find_one({"_id":2})["api_key_historical"]
-  # find last record from api_sessions from _id column
-  user_record=mongodb("api_sessions").find_one({"_id":2})
-  access_token=user_record["his_jt"]
-  refresh_token=user_record["his_rt"]
+        if st.form_submit_button("Submit"):
 
-  #create object of call
-  obj=SmartConnect(api_key=api_key, access_token=access_token, refresh_token=refresh_token)
+            correlation_id = "abc123"
+            action = 1
+            mode = 3
 
-  st.title("Stock Prediction")
-  st.write("Welcome to the stock prediction page")
+            token_list = [{"exchangeType": 1, "tokens": [token]}]
 
-  # Read the data from json file
-  with open('json_files/OpenAPIScripMaster.json') as f:
-    data = json.load(f)
+            sws = SmartWebSocketV2(AUTH_TOKEN, API_KEY, CLIENT_CODE, FEED_TOKEN)
 
-  # Convert the json data to columns and rows
-  df = pd.DataFrame(data)
-  # Selectbox to select the stock
-  stock_name = st.selectbox('Select the stock', df['symbol'] + ' - ' + df['exch_seg'])
- 
-  # From date
-  from_date = st.date_input('From Date', datetime.datetime.now() - datetime.timedelta(days=1), min_value=datetime.datetime.now() - datetime.timedelta(days=30), max_value=datetime.datetime.now())
-  from_date = from_date.strftime("%Y-%m-%d")+ " 09:00"
-  # To date should be greater than from date
-  to_date = st.date_input('To Date', datetime.datetime.now(), min_value=datetime.datetime.now() - datetime.timedelta(days=30), max_value=datetime.datetime.now())
-  to_date = to_date.strftime("%Y-%m-%d")+ " 15:30"
 
-  # Selectbox to select the interval
-  interval = st.selectbox('Select the interval', ['ONE_MINUTE', 'FIVE_MINUTE', 'FIFTEEN_MINUTE', 'THIRTY_MINUTE', 'ONE_HOUR', 'ONE_DAY'])
-  # Fetch the token from the selected stock
-  token = df.loc[df['symbol'] + ' - ' + df['exch_seg'] == stock_name, 'token'].values[0]
-  exch_seg = df.loc[df['symbol'] + ' - ' + df['exch_seg'] == stock_name, 'exch_seg'].values[0]
+            def on_data(wsapp, message):
+                print("Ticks: {}".format(message))
 
-  if st.button("Submit"):
-    try:
-      historicParam={
-      "exchange": exch_seg,
-      "symboltoken": token,
-      "interval": interval,
-      "fromdate": from_date, 
-      "todate": to_date
-      }
-      his_data = obj.getCandleData(historicParam)
-      # st.write(his_data)
-      # Generate the DataFrame from the data
-      df = pd.DataFrame(his_data['data'])
-      # st.dataframe(df, use_container_width=True)
-      
-      # Generate the dates list
-      dates = []
-      open_price = []
-      high_price = []
-      low_price = []
-      close_price = []
-      volume = []
-      for i in range(len(his_data['data'])):
-        dates.append(his_data['data'][i][0])
-        open_price.append(his_data['data'][i][1])
-        high_price.append(his_data['data'][i][2])
-        low_price.append(his_data['data'][i][3])
-        close_price.append(his_data['data'][i][4])
-        volume.append(his_data['data'][i][5])
 
-      df = pd.DataFrame({
-        'Dates': dates,
-        'Open': open_price,
-        'High': high_price,
-        'Low': low_price,
-        'Close': close_price,
-        'Volume': volume
-      })
-      st.dataframe(df, use_container_width=True)
-      # Generate the line chart for the stock with the dates on x-axis and the price on y-axis
-      # st.line_chart(data=df[['Open', 'High', 'Low', 'Close']],
-      #               use_container_width=True,
-      #               height=500
-      #               )
-      
-    except Exception as e:
-      print("Historic Api failed: {}".format(e.message))
+            def on_open(wsapp):
+                print("on open")
+                sws.subscribe(correlation_id, mode, token_list)
+
+
+            def on_error(wsapp, error):
+                print(error)
+
+
+            def on_close(wsapp):
+                print("Close")
+
+
+            # Assign the callbacks.
+            sws.on_open = on_open
+            sws.on_data = on_data
+            sws.on_error = on_error
+            sws.on_close = on_close
+
+            sws.connect()

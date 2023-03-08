@@ -13,7 +13,6 @@ import streamlit_authenticator as stauth
 # index page
 from pages.public_pages.index import index
 
-from auth import login
 from pages.user.session.generate_session import generate_session
 
 # Public Pages
@@ -22,7 +21,10 @@ from pages.public_pages.contact import contact
 
 # Private Pages
 from pages.user.settings import settings
-from pages.user.stock_predict import stock_predict
+
+#Stock Prediction
+from pages.user.historical_stock_predict import historical_stock_predict
+from pages.user.stock_predict.stock_predict import real_time_predict
 
 # Admin Pages
 from pages.admin.contact_form_list import contact_form_list
@@ -31,23 +33,23 @@ from pages.admin.dashboard.dashboard import dash
 # User Pages
 from pages.admin.user import add_user
 
+# Database connection
+from database import mongodb
 
 class Navbar:
-
     def sidebar(self):
         # Sidebar menu
         # if user is logged in, show logout button
-        if st.session_state.get("logged_in", True):
-            login_menu = "Logout"
+        if st.session_state.get("is_logged_in", True):
             # if is_admin then show admin menu
             if st.session_state.get("is_admin", False):
                 with st.sidebar:
                     selected = option_menu(
                         menu_title="Menu",
                         options=["Dashboard", "Add User",
-                                 "Settings", "TOTP", login_menu],
+                                 "Settings", "TOTP"],
                         icons=["house", "shield-lock", "wrench",
-                               "envelope", "shield-lock"],
+                               "envelope"],
                         menu_icon="cast",
                         default_index=0,
                         orientation="vertical",  # horizontal
@@ -69,10 +71,10 @@ class Navbar:
                 with st.sidebar:
                     selected = option_menu(
                         menu_title="Menu",
-                        options=["Home", "Stock Prediction",
-                                 "Settings", "Contact", "TOTP", login_menu],
-                        icons=["house", "book", "wrench",
-                               "envelope", "book", "shield-lock"],
+                        options=["Home", "Historical","Stock Predict",
+                                 "Settings", "Contact", "TOTP"],
+                        icons=["house", "book", "bar-chart", "wrench",
+                               "envelope", "book"],
                         menu_icon="cast",
                         default_index=0,
                         orientation="vertical",  # horizontal
@@ -83,11 +85,14 @@ class Navbar:
                     home()
 
                 # Stock Prediction page
-                elif selected == "Stock Prediction":
+                elif selected == "Historical":
+                    hsp = historical_stock_predict
+                    hsp.stock_predict()
+
+                elif selected == "Stock Predict":
                     with st.spinner('Wait for it...'):
                         time.sleep(1)
-                    sp = stock_predict
-                    sp.stock_predict()
+                    real_time_predict()
 
                 elif selected == "Settings":
                     settings()
@@ -97,28 +102,3 @@ class Navbar:
 
                 elif selected == "Contact":
                     contact()
-
-        # if user is not logged in, show login button
-        else:
-            login_menu = "Login"
-            with st.sidebar:
-                selected = option_menu(
-                    menu_title="Menu",
-                    options=["Home", "Contact", login_menu],
-                    icons=["house", "envelope", "shield-lock"],
-                    menu_icon="cast",
-                    default_index=0,
-                    orientation="vertical",  # horizontal
-                )
-
-            # Home page
-            if selected == "Home":
-                index()
-
-            # Contact page
-            if selected == "Contact":
-                contact()
-            
-            # Login page
-            elif selected == "Login":
-                login()

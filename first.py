@@ -13,8 +13,7 @@ def main():
     admin_password = stauth.Hasher("admin").generate()
     admin_data = {
         "_id":1,
-        "first_name":"admin",
-        "last_name":"",
+        "name":"admin",
         "email":"abc@abc.com",
         "phone":"1234567890",
         "state":"Delhi",
@@ -30,8 +29,7 @@ def main():
     user_password = stauth.Hasher("user@123").generate()
     user_data = {
         "_id":2,
-        "first_name":"user",
-        "last_name":"",
+        "name":"user",
         "email":"user@abc.com",
         "phone":"1234567890",
         "state":"Delhi",

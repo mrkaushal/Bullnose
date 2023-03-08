@@ -31,8 +31,9 @@ def generate_session():
         
         if st.form_submit_button("Submit"):
             if totp:
-                # st.write(totp)
-                # st.write(type(totp))
+                for percent_complete in range(100):
+                        time.sleep(0.1)
+                        my_bar.progress(percent_complete + 1, text=progress_text)
                 st.success("Logged in successfully!")
 
                 # Fetch the password from database
@@ -103,12 +104,15 @@ def generate_session():
                 historical_feedToken = his_data['data']['feedToken']
                 historical_jwtToken = his_data['data']['jwtToken']
 
-                # session_collection.insert_one(data)
-                
+                progress_text = "Operation in progress. Please wait."
+                my_bar = st.progress(0, text=progress_text)
                 # session id counter
                 session_id = 2
                 # check if session id exists then increment it by 1
                 if session_collection.find_one({"_id": session_id}):
+                    for percent_complete in range(100):
+                        time.sleep(0.1)
+                        my_bar.progress(percent_complete + 1, text=progress_text)
                     # Update the data
                     data = {
                         "_id": session_id,
