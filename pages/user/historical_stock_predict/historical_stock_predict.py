@@ -10,6 +10,7 @@ from database import mongodb
 
 # Streamlit extras
 from streamlit_extras.no_default_selectbox import selectbox
+from streamlit_extras.mandatory_date_range import date_range_picker
 
 # Import SmartCannect API
 from smartapi import SmartConnect #or from smartapi.smartConnect import SmartConnect
@@ -47,12 +48,23 @@ def stock_predict():
   nse_df = df[df['exch_seg'] == 'NSE']
   # Selectbox to select the stock
   stock_name = st.selectbox('Select the stock', df['symbol'] + ' - ' + nse_df['exch_seg'])
- 
+  result = date_range_picker("Select a date range",
+                             default_start=datetime.datetime.now() - datetime.timedelta(days=3) ,
+                             default_end=datetime.datetime.now(),
+                             min_date=datetime.datetime.now() - datetime.timedelta(days=30),
+                             max_date=datetime.datetime.now(),
+                             error_message="Please select start and end date",
+                            )
+  # from date from result
+  from_date = result[0]
+  # to date from result
+  to_date = result[1]
+  
   # From date
-  from_date = st.date_input('From Date', datetime.datetime.now() - datetime.timedelta(days=1), min_value=datetime.datetime.now() - datetime.timedelta(days=30), max_value=datetime.datetime.now())
+  # from_date = st.date_input('From Date', datetime.datetime.now() - datetime.timedelta(days=1), min_value=datetime.datetime.now() - datetime.timedelta(days=30), max_value=datetime.datetime.now())
   from_date = from_date.strftime("%Y-%m-%d")+ " 09:00"
   # To date should be greater than from date
-  to_date = st.date_input('To Date', datetime.datetime.now(), min_value=datetime.datetime.now() - datetime.timedelta(days=30), max_value=datetime.datetime.now())
+  # to_date = st.date_input('To Date', datetime.datetime.now(), min_value=datetime.datetime.now() - datetime.timedelta(days=30), max_value=datetime.datetime.now())
   to_date = to_date.strftime("%Y-%m-%d")+ " 15:30"
 
   # Selectbox to select the interval

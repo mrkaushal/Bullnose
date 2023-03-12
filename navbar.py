@@ -32,7 +32,7 @@ from pages.admin.contact_form_list import contact_form_list
 from pages.admin.dashboard.dashboard import dash
 # User Pages
 from pages.admin.user import add_user
-
+from pages.admin.user.userboard import user_dash
 # Database connection
 from database import mongodb
 
@@ -42,13 +42,13 @@ class Navbar:
         # if user is logged in, show logout button
         if st.session_state.get("is_logged_in", True):
             # if is_admin then show admin menu
-            if st.session_state.get("is_admin", False):
+            if st.session_state.get("is_admin", True):
                 with st.sidebar:
                     selected = option_menu(
                         menu_title="Menu",
-                        options=["Dashboard", "Add User",
+                        options=["Dashboard", "Add User","User Dashboard",
                                  "Settings", "TOTP"],
-                        icons=["house", "shield-lock", "wrench",
+                        icons=["house", "shield-lock", "envelope","wrench",
                                "envelope"],
                         menu_icon="cast",
                         default_index=0,
@@ -63,6 +63,9 @@ class Navbar:
                 elif selected == "Add User":
                     add_user.Users().add_user()
 
+                elif selected == "User Dashboard":
+                    user_dash()
+                    
                 elif selected == "Contact Details":
                     contact_form_list()
 
