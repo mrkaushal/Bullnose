@@ -42,7 +42,7 @@ class Navbar:
         # if user is logged in, show logout button
         if st.session_state.get("is_logged_in", True):
             # if is_admin then show admin menu
-            if st.session_state.get("is_admin", True):
+            if st.session_state.get("is_admin", False):
                 with st.sidebar:
                     selected = option_menu(
                         menu_title="Menu",

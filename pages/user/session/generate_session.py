@@ -31,9 +31,6 @@ def generate_session():
         
         if st.form_submit_button("Submit"):
             if totp:
-                for percent_complete in range(100):
-                        time.sleep(0.1)
-                        my_bar.progress(percent_complete + 1, text=progress_text)
                 st.success("Logged in successfully!")
 
                 # Fetch the password from database
