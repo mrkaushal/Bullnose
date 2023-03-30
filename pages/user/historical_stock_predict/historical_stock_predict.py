@@ -27,9 +27,9 @@ yesterday_date = (datetime.datetime.now() - datetime.timedelta(days=1)).strftime
 
 def stock_predict():
   # Fetch api_key from api_config collection where _id=2
-  api_key=mongodb("api_config").find_one({"_id":2})["api_key_historical"]
+  api_key=mongodb("api_config").find_one({"_id":1})["api_key_historical"]
   # find last record from api_sessions from _id column
-  user_record=mongodb("api_sessions").find_one({"_id":2})
+  user_record=mongodb("api_sessions").find_one({"_id":1})
   access_token=user_record["his_jt"]
   refresh_token=user_record["his_rt"]
 
@@ -89,14 +89,14 @@ def stock_predict():
       # st.dataframe(df, use_container_width=True)
       
       # Generate the dates list
-      dates = []
+      timestamp = []
       open_price = []
       high_price = []
       low_price = []
       close_price = []
       volume = []
       for i in range(len(his_data['data'])):
-        dates.append(his_data['data'][i][0])
+        timestamp.append(his_data['data'][i][0])
         open_price.append(his_data['data'][i][1])
         high_price.append(his_data['data'][i][2])
         low_price.append(his_data['data'][i][3])
@@ -104,7 +104,7 @@ def stock_predict():
         volume.append(his_data['data'][i][5])
 
       df = pd.DataFrame({
-        'Dates': dates,
+        'Timestamp': timestamp,
         'Open': open_price,
         'High': high_price,
         'Low': low_price,

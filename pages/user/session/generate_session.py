@@ -61,7 +61,7 @@ def generate_session():
 
                 url = "https://apiconnect.angelbroking.com/rest/auth/angelbroking/user/v1/loginByPassword"
                 # Find Client Code and Password from database where id = 2
-                user_data = user_collection.find_one({"_id":2})
+                user_data = user_collection.find_one({"_id":1})
                 payload = {
                     "clientcode": user_data["username"],
                     "password": user_data["client_password"],
@@ -104,7 +104,7 @@ def generate_session():
                 progress_text = "Operation in progress. Please wait."
                 my_bar = st.progress(0, text=progress_text)
                 # session id counter
-                session_id = 2
+                session_id = 1
                 # check if session id exists then increment it by 1
                 if session_collection.find_one({"_id": session_id}):
                     for percent_complete in range(100):

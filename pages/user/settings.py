@@ -25,7 +25,7 @@ def settings():
 
     with st.expander("**See User Details**"):
       # Show user details from users collection where _id = 2
-      data = user_collection.find_one({"_id":2})
+      data = user_collection.find_one({"_id":1})
 
       # fetch user details from mongodb
       username = data["username"]
@@ -60,7 +60,7 @@ def settings():
 
     with st.expander("**See Secret Details**"):
       # Show api key from api_config collection where _id = 2
-      data = config_collection.find_one({"_id":2})
+      data = config_collection.find_one({"_id":1})
 
       # fetch api key and secret from mongodb
       api_key_fetch = data["api_key"]
