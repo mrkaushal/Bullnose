@@ -5,6 +5,10 @@ import json
 import datetime
 import time
 import os
+
+# Machine Learning Models
+from pages.user.historical_stock_predict.historical_m1 import model1
+from pages.user.historical_stock_predict.historical_m2 import model2
 # Database
 from database import mongodb
 
@@ -69,6 +73,9 @@ def stock_predict():
 
   # Selectbox to select the interval
   interval = st.selectbox('Select the interval', ['ONE_MINUTE', 'FIVE_MINUTE', 'FIFTEEN_MINUTE', 'THIRTY_MINUTE', 'ONE_HOUR', 'ONE_DAY'])
+
+  # Selectbox to select the interval
+  selected_model = st.selectbox('Select the model', ['Model M1', 'Model M2'])
   # Fetch the token from the selected stock
   token = df.loc[df['symbol'] + ' - ' + df['exch_seg'] == stock_name, 'token'].values[0]
   exch_seg = df.loc[df['symbol'] + ' - ' + df['exch_seg'] == stock_name, 'exch_seg'].values[0]
@@ -112,6 +119,13 @@ def stock_predict():
         'Volume': volume
       })
       st.dataframe(df, use_container_width=True)
+      
+      if selected_model == 'Model M1':
+        model1(df)
+      elif selected_model == 'Model M2':
+        model2(df)
+      else:
+        st.write("Model M3")
       # Generate the line chart for the stock with the dates on x-axis and the price on y-axis
       # st.line_chart(data=df[['Open', 'High', 'Low', 'Close']],
       #               use_container_width=True,

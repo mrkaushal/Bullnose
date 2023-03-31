@@ -18,3 +18,4 @@ websocket-client
 keras
 Plost
 smartapi-python
+scikit-learn
