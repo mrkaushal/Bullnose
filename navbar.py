@@ -93,8 +93,6 @@ class Navbar:
                     hsp.stock_predict()
 
                 elif selected == "Stock Predict":
-                    with st.spinner('Wait for it...'):
-                        time.sleep(1)
                     real_time_predict()
 
                 elif selected == "Settings":

@@ -4,10 +4,15 @@ import numpy as np
 import websocket as ws
 import asyncio
 
-async def real_time_predict():
+def real_time_predict():
     st.title('Real Time Stock Prediction')
-
-    async with ws.connect('ws://192.46.210.179:8000/symbols-data/') as websocket:
-        while True:
-            response = await websocket.recv()
-            st.write(response)
+    # import the csv file into a dataframe
+    df = pd.read_csv('csv_files/CompanyList.csv')
+    st.write(df)
+    # Selectbox to select the stock
+    stock_name = st.selectbox('Select the stock', df['symbol'] + ' - ' + df['exch_seg'])
+    st.write(stock_name)
+    token =  df.loc[df['symbol'] + ' - ' + df['exch_seg'] == stock_name, 'token'].values[0]
+    exch_seg = df.loc[df['symbol'] + ' - ' + df['exch_seg'] == stock_name, 'exch_seg'].values[0]
+    st.write(str(token))
+    st.write(exch_seg)

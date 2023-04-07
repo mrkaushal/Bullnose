@@ -9,6 +9,7 @@ import os
 # Machine Learning Models
 from pages.user.historical_stock_predict.historical_m1 import model1
 from pages.user.historical_stock_predict.historical_m2 import model2
+from pages.user.historical_stock_predict.historical_m3 import model3
 # Database
 from database import mongodb
 
@@ -48,10 +49,14 @@ def stock_predict():
     data = json.load(f)
 
   # Convert the json data to columns and rows
-  df = pd.DataFrame(data)
-  nse_df = df[df['exch_seg'] == 'NSE']
+  # df = pd.DataFrame(data)
+  # nse_df = df[df['exch_seg'] == 'NSE']
   # Selectbox to select the stock
-  stock_name = st.selectbox('Select the stock', df['symbol'] + ' - ' + nse_df['exch_seg'])
+  # stock_name = st.selectbox('Select the stock', df['symbol'] + ' - ' + nse_df['exch_seg'])
+  df = pd.read_csv('csv_files/CompanyList.csv')
+  stock_name = st.selectbox('Select the stock', df['symbol'] + ' - ' + df['exch_seg'])
+  token = df.loc[df['symbol'] + ' - ' + df['exch_seg'] == stock_name, 'token'].values[0]
+  exch_seg = df.loc[df['symbol'] + ' - ' + df['exch_seg'] == stock_name, 'exch_seg'].values[0]
   result = date_range_picker("Select a date range",
                              default_start=datetime.datetime.now() - datetime.timedelta(days=3) ,
                              default_end=datetime.datetime.now(),
@@ -75,16 +80,16 @@ def stock_predict():
   interval = st.selectbox('Select the interval', ['ONE_MINUTE', 'FIVE_MINUTE', 'FIFTEEN_MINUTE', 'THIRTY_MINUTE', 'ONE_HOUR', 'ONE_DAY'])
 
   # Selectbox to select the interval
-  selected_model = st.selectbox('Select the model', ['Model M1', 'Model M2'])
+  selected_model = st.selectbox('Select the model', ['Model M1', 'Model M2', 'Model M3'])
   # Fetch the token from the selected stock
-  token = df.loc[df['symbol'] + ' - ' + df['exch_seg'] == stock_name, 'token'].values[0]
-  exch_seg = df.loc[df['symbol'] + ' - ' + df['exch_seg'] == stock_name, 'exch_seg'].values[0]
+  # token = df.loc[df['symbol'] + ' - ' + df['exch_seg'] == stock_name, 'token'].values[0]
+  # exch_seg = df.loc[df['symbol'] + ' - ' + df['exch_seg'] == stock_name, 'exch_seg'].values[0]
 
   if st.button("Submit"):
     try:
       historicParam={
       "exchange": exch_seg,
-      "symboltoken": token,
+      "symboltoken": str(token),
       "interval": interval,
       "fromdate": from_date, 
       "todate": to_date
@@ -124,6 +129,8 @@ def stock_predict():
         model1(df)
       elif selected_model == 'Model M2':
         model2(df)
+      elif selected_model == 'Model M3':
+        model3(df)
       else:
         st.write("Model M3")
       # Generate the line chart for the stock with the dates on x-axis and the price on y-axis
