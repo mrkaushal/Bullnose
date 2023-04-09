@@ -8,13 +8,15 @@ import time
 from streamlit_elements import elements, dashboard, mui, editor, media, lazy, sync, nivo
 from streamlit_extras.metric_cards import style_metric_cards
 
+import pandas as pd
 def home():
-    
+    df = pd.read_csv('csv_files/CompanyList.csv')
+    total_stocks = len(df)
     with elements("html_container"):
         col1, col2, col3 = st.columns(3)
-        col1.metric(label="Gain", value=5000, delta=1000)
-        col2.metric(label="Loss", value=5000, delta=-1000)
-        col3.metric(label="No Change", value=5000, delta=0)
+        col1.metric(label="Total Stocks", value=total_stocks,delta=None)
+        col2.metric(label="Loss", value=5000, delta=None)
+        col3.metric(label="No Change", value=5000, delta=None)
         style_metric_cards(border_left_color="#ff4b4b")
         # Html Container
         st.markdown(

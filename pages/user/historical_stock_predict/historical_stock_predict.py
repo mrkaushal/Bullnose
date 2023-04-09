@@ -45,8 +45,8 @@ def stock_predict():
   # st.write("Welcome to the historical stock prediction page")
 
   # Read the data from json file
-  with open('json_files/OpenAPIScripMaster.json') as f:
-    data = json.load(f)
+  # with open('json_files/OpenAPIScripMaster.json') as f:
+  #   data = json.load(f)
 
   # Convert the json data to columns and rows
   # df = pd.DataFrame(data)
