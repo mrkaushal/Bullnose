@@ -40,4 +40,7 @@ def model2(df):
       'Volume': [159000]
   })
   prediction = lr_model.predict(new_data)
-  st.write('Predicted open and close price:', prediction)
+  # store the prediction in open and close columns with rounded values
+  new_data['Open'] = np.round(prediction[0][0], 2)
+  new_data['Close'] = np.round(prediction[0][1], 2)
+  st.write('Predicted Values:', new_data)

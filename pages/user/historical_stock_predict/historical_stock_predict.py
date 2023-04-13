@@ -41,7 +41,7 @@ def stock_predict():
   #create object of call
   obj=SmartConnect(api_key=api_key, access_token=access_token, refresh_token=refresh_token)
 
-  st.title("Historical Stock Prediction")
+  st.title("Historical Stock Data")
   # st.write("Welcome to the historical stock prediction page")
 
   # Read the data from json file
@@ -80,7 +80,7 @@ def stock_predict():
   interval = st.selectbox('Select the interval', ['ONE_MINUTE', 'FIVE_MINUTE', 'FIFTEEN_MINUTE', 'THIRTY_MINUTE', 'ONE_HOUR', 'ONE_DAY'])
 
   # Selectbox to select the interval
-  selected_model = st.selectbox('Select the model', ['Model M1', 'Model M2', 'Model M3'])
+  # selected_model = st.selectbox('Select the model', ['Model M1', 'Model M2 (Linear Regression)', 'Model M3'])
   # Fetch the token from the selected stock
   # token = df.loc[df['symbol'] + ' - ' + df['exch_seg'] == stock_name, 'token'].values[0]
   # exch_seg = df.loc[df['symbol'] + ' - ' + df['exch_seg'] == stock_name, 'exch_seg'].values[0]
@@ -125,19 +125,19 @@ def stock_predict():
       })
       st.dataframe(df, use_container_width=True)
       
-      if selected_model == 'Model M1':
-        model1(df)
-      elif selected_model == 'Model M2':
-        model2(df)
-      elif selected_model == 'Model M3':
-        model3(df)
-      else:
-        st.write("Model M3")
-      # Generate the line chart for the stock with the dates on x-axis and the price on y-axis
-      # st.line_chart(data=df[['Open', 'High', 'Low', 'Close']],
-      #               use_container_width=True,
-      #               height=500
-      #               )
+      # if selected_model == 'Model M1':
+      #   model1(df)
+      # elif selected_model == 'Model M2 (Linear Regression)':
+      #   model2(df)
+      # # elif selected_model == 'Model M3':
+      # #   model3(df)
+      # else:
+      #   st.write("Model M3")
+      # # Generate the line chart for the stock with the dates on x-axis and the price on y-axis
+      # # st.line_chart(data=df[['Open', 'High', 'Low', 'Close']],
+      # #               use_container_width=True,
+      # #               height=500
+      # #               )
       
     except Exception as e:
       print("Historic Api failed: {}".format(e.message))
